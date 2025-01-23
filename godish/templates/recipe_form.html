@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Recipe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+            display: block;
+        }
+        .ingredients {
+            margin-top: 5px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 30px;
+            width: 80%;
+            max-width: 500px;
+            height: 100px; /* Increased height for better multi-line input */
+            text-align: left; /* Aligns text to the left for a better typing experience */
+            resize: vertical; /* Allows resizing the box vertically */
+        }
+        .cuisine, .difficulty {
+            width: 80%;
+            max-width: 500px;
+            margin-top: 5px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        .cuisine-difficulty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .submit {
+            background-color: #de9414;
+            color: white;
+            border: 3px solid #de9414;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 10rem;
+            display: flex;
+            justify-content: center;
+            align-self: center;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .submit:hover {
+            background-color: #fcc048;
+        }
+        #results {
+            margin-top: 40px;
+        }
+        .recipe {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f1f1f1;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .recipe h3 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .recipe div {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #555;
+        }
+        .recipe ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        .recipe h4 {
+            margin-top: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <h1>Find Recipes</h1>
+        <form id="recipeForm" method="POST" action="{% url 'get_recipe' %}">
+            {% csrf_token %}
+            <label for="ingredients">Ingredients (comma-separated):</label>
+            <textarea id="ingredients" name="ingredients" class="ingredients" required></textarea>
+
+            <div class="cuisine-difficulty">
+                <label for="cuisine">Preferred Cuisine:</label>
+                <select id="cuisine" name="cuisine" class="cuisine">
+                    <option value="">Any</option>
+                    <option value="italian">Italian</option>
+                    <option value="indian">Indian</option>
+                    <option value="chinese">Chinese</option>
+                    <option value="mexican">Mexican</option>
+                    <option value="japanese">Japanese</option>
+                    <option value="greek">Greek</option>
+                    <option value="thai">Thai</option>
+                    <option value="spanish">Spanish</option>
+                </select>
+
+                <select id="difficulty" name="difficulty" class="difficulty">
+                    <option value="">Any</option>
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+
+            <button type="submit" class="submit">Search Recipes</button>
+        </form>
+
+        <div id="results">
+            {% if recipe %}
+                <div class="recipe">
+                    <h3>Recipe Suggestion</h3>
+                    <div>
+                        <!-- Render the recipe HTML content safely -->
+                        {{ recipe|safe }}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

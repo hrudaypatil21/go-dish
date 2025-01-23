@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culinary Delights - World Cuisines</title>
+    <style>
+        body, html {
+            overflow: hidden;
+        }
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        /* Darker Gradient Background */
+        body {
+            background: linear-gradient(135deg, #0f0f0f, #141414, #222222);
+            color: #e0e0e0; /* Slightly lighter text for better contrast */
+            font-size: 16px;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Darker Glass Effect */
+        .glass-effect {
+            background: rgba(0, 0, 0, 0.6); /* Darker background for glass effect */
+            backdrop-filter: blur(15px); /* Stronger blur for frosted effect */
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); /* Darker shadow */
+            padding: 2rem;
+        }
+
+        /* Example Dishes Grid */
+        #cuisineExamples {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 items per row */
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .example-card {
+            background-color: rgba(31, 31, 31, 0.8); /* Dark background for cards */
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Darker shadow */
+            backdrop-filter: blur(15px); /* Darker glass effect */
+        }
+
+        .example-card h3 {
+            color: #e0e0e0; /* Light text color for the name */
+            margin-bottom: 1rem;
+        }
+
+        .example-card p {
+            color: #b0b0b0; /* Lighter text for the recipe */
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            #cuisineExamples {
+                grid-template-columns: 1fr; /* Stack items on small screens */
+            }
+        }
+
+        /* Acrylic Background for more contrast */
+        .acrylic-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(15px);
+            z-index: -1;
+            border-radius: 10px;
+        }
+
+        /* Navigation bar with dark glass effect */
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.85); /* Darker background for navbar */
+            backdrop-filter: blur(12px); /* Stronger blur effect */
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 6px 30px rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 2rem; /* Space below navbar */
+        }
+
+        .logo {
+            color: #e0e0e0; /* Lighter text color */
+            font-size: 1.5rem;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #e0e0e0;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #0078d4; /* Fluent blue on hover */
+        }
+
+        /* Cuisine Categories Page */
+        .cuisine-categories {
+            margin-top: 0px;
+            padding: 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 items per row */
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .category-card {
+    position: relative;
+    height: 300px;
+    border-radius: 15px;
+    overflow: hidden; /* Ensure the image stays within the rounded corners */
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4); /* Darker shadow */
+    backdrop-filter: blur(15px); /* Darker glass effect */
+}
+
+        .category-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .category-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px; /* Apply border-radius to the image to match the card's corners */
+}
+
+        .category-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8); /* Dark overlay */
+            padding: 2rem;
+            color: white;
+            backdrop-filter: blur(5px); /* Stronger frosted effect */
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-desc {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Cuisine Specific Page */
+        .cuisine-page {
+            margin-top: 80px;
+            display: none;
+            padding: 2rem;
+        }
+
+        .cuisine-header {
+            text-align: center;
+            padding: 3rem 0;
+            background-size: cover;
+            background-position: center;
+            color: white;
+            position: relative;
+            border-radius: 12px;
+            box-shadow: 0 6px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(15px); /* Stronger glass effect */
+        }
+
+        .cuisine-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5); /* Dark overlay */
+            border-radius: 12px;
+            z-index: 1;
+        }
+
+        .cuisine-header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cuisine-title {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .cuisine-description {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .recipe-filters {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-button {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            background: #0078d4; /* Fluent blue */
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); /* Dark shadow */
+            backdrop-filter: blur(5px); /* Darker glass effect */
+        }
+
+        .filter-button:hover {
+            background: #0066b3;
+        }
+
+        .filter-button.active {
+            background: #005a8f;
+        }
+
+        /* Back Button */
+        .back-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #0078d4;
+            color: white;
+            padding: 1rem;
+            border-radius: 50%;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(5px); /* Glass effect */
+        }
+
+        .back-button:hover {
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .categories-grid {
+                grid-template-columns: 1fr; /* Stack items on small screens */
+            }
+            
+            .cuisine-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="acrylic-background"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="" class="logo">Recipie</a>
+        <div class="nav-links">
+            <a href="get_recipe/">Create Recipes</a>
+            <a href="blog/">User Content</a>
+            <a href="contact/">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Cuisine Categories Page -->
+    <section class="cuisine-categories glass-effect" id="categoriesPage">
+        <h1 style="text-align: center; font-size: 2.5rem; margin-bottom: 2rem;">Explore World Cuisines</h1>
+        <div class="categories-grid">
+            {% load static %}
+            <div class="category-card" onclick="showCuisinePage('italian')">
+                <img src="{% static 'C:\Users\hruda\godish\godish\static\img\italian.jpg' %}" alt="Italian Cuisine" class="category-image">
+                <div class="category-overlay">
+                    <h2 class="category-title">Italian</h2>
+                    <p class="category-desc">Classic Mediterranean flavors and traditional recipes</p>
+                </div>
+            </div>
+            <div class="category-card" onclick="showCuisinePage('asian')">
+                <img src="{% static 'img/asian.jpeg' %}" alt="Asian Cuisine" class="category-image">
+                <div class="category-overlay">
+                    <h2 class="category-title">Asian</h2>
+                    <p class="category-desc">Vibrant flavors from the East</p>
+                </div>
+            </div>
+            <div class="category-card" onclick="showCuisinePage('indian')">
+                <img src="{% static 'C:\Users\hruda\godish\godish\static\img\indian.jpg' %}" alt="Indian Cuisine" class="category-image">
+                <div class="category-overlay">
+                    <h2 class="category-title">Indian</h2>
+                    <p class="category-desc">Rich spices and aromatic dishes</p>
+                </div>
+            </div>
+            <div class="category-card" onclick="showCuisinePage('mexican')">
+                <img src="{% static 'C:\Users\hruda\godish\godish\static\img\mexi.jpeg' %}" alt="Mexican Cuisine" class="category-image">
+                <div class="category-overlay">
+                    <h2 class="category-title">Mexican</h2>
+                    <p class="category-desc">Bold and spicy Latin American dishes</p>
+                </div>
+            </div>
+            <div class="category-card" onclick="showCuisinePage('french')">
+                <img src="{% static 'C:\Users\hruda\godish\godish\static\img\french.jpeg' %}" alt="French Cuisine" class="category-image">
+                <div class="category-overlay">
+                    <h2 class="category-title">French</h2>
+                    <p class="category-desc">Elegant and sophisticated classics</p>
+                </div>
+            </div>
+            <div class="category-card" onclick="showCuisinePage('mediterranean')">
+                <img src="{% static 'C:\Users\hruda\godish\godish\static\img\med.jpg' %}" alt="Mediterranean Cuisine" class="category-image">
+                <div class="category-overlay">
+                    <h2 class="category-title">Mediterranean</h2>
+                    <p class="category-desc">Healthy and fresh coastal favorites</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cuisine Specific Page -->
+    <section class="cuisine-page glass-effect" id="cuisinePage">
+        <div class="cuisine-header">
+            <div class="cuisine-header-content">
+                <h1 class="cuisine-title" id="cuisineTitle"></h1>
+                <p class="cuisine-description" id="cuisineDescription"></p>
+            </div>
+        </div>
+    
+        <div class="recipe-filters">
+            <button class="filter-button active">All</button>
+            <button class="filter-button">Appetizers</button>
+            <button class="filter-button">Main Course</button>
+            <button class="filter-button">Desserts</button>
+            <button class="filter-button">Vegetarian</button>
+        </div>
+    
+        <h2>Popular Dishes</h2>
+        <ul id="cuisineExamples">
+            <!-- Dynamic list of examples will be inserted here -->
+        </ul>
+    
+        <div class="recipe-grid" id="cuisineRecipes"></div>
+    </section>
+
+    <a href="#" class="back-button" id="backButton" style="display: none;">↩</a>
+
+    <script>
+        // Cuisine data
+        const cuisineData = {
+            italian: {
+                title: "Italian Cuisine",
+                description: "Experience the warmth and passion of Italian cooking with our collection of authentic recipes passed down through generations.",
+                background: "/api/placeholder/1920/600",
+                examples: [
+                    { name: "Spaghetti Carbonara", recipe: "Classic pasta with eggs, cheese, pancetta, and pepper." },
+                    { name: "Margherita Pizza", recipe: "Simple pizza with tomato, mozzarella, and fresh basil." },
+                    { name: "Lasagna", recipe: "Layers of pasta, meat sauce, and creamy béchamel." },
+                    { name: "Risotto alla Milanese", recipe: "Saffron-flavored creamy rice dish." },
+                    { name: "Tiramisu", recipe: "Layered dessert with coffee-soaked ladyfingers and mascarpone." }
+                ]
+            },
+            asian: {
+                title: "Asian Cuisine",
+                description: "Explore the diverse and vibrant flavors of Asia, from spicy curries to aromatic stir-fries.",
+                background: "/api/placeholder/1920/600",
+                examples: [
+                    { name: "Sushi", recipe: "Japanese dish with vinegared rice, fish, and vegetables." },
+                    { name: "Dim Sum", recipe: "Steamed dumplings filled with meat or vegetables." },
+                    { name: "Pad Thai", recipe: "Stir-fried noodles with shrimp, peanuts, and lime." },
+                    { name: "Kimchi", recipe: "Fermented cabbage with chili and garlic." },
+                    { name: "Pho", recipe: "Vietnamese noodle soup with beef and herbs." }
+                ]
+            }
+        };
+
+        function showCuisinePage(cuisine) {
+            const data = cuisineData[cuisine];
+            document.getElementById("cuisineTitle").innerText = data.title;
+            document.getElementById("cuisineDescription").innerText = data.description;
+            document.getElementById("cuisinePage").style.display = "block";
+            document.getElementById("categoriesPage").style.display = "none";
+    
+            const cuisineExamples = document.getElementById("cuisineExamples");
+            cuisineExamples.innerHTML = '';
+            data.examples.forEach((example) => {
+                const listItem = document.createElement("li");
+                listItem.className = "example-card";
+                listItem.innerHTML = `
+                    <h3>${example.name}</h3>
+                    <p>${example.recipe}</p>
+                `;
+                cuisineExamples.appendChild(listItem);
+            });
+    
+            document.getElementById("backButton").style.display = "block";
+        }
+
+        // Back button functionality
+        document.getElementById("backButton").addEventListener("click", function() {
+            document.getElementById("cuisinePage").style.display = "none";
+            document.getElementById("categoriesPage").style.display = "block";
+            document.getElementById("backButton").style.display = "none";
+        });
+    </script>
+</body>
+</html>

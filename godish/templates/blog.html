@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Blog</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a; /* Dark background */
+            color: white;
+        }
+        header {
+            background-color: #0a0a0a; /* Darker gray for header */
+            color: #ffffff;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .blog-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .blog-post {
+            background: rgba(13, 14, 15, 0.8); /* Semi-transparent background */
+            backdrop-filter: blur(5px); /* Blur effect */
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .blog-post:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .blog-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        .blog-content {
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            color: #d0d0d0; /* Light gray text */
+        }
+        .blog-author {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        .add-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #0078d4; /* Windows blue */
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .add-button:hover {
+            background-color: #005a9e;
+        }
+        #blog-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px); /* Blur effect for modal background */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: rgba(23, 25, 26, 0.9); /* Semi-transparent modal background */
+            backdrop-filter: blur(5px); /* Blur effect for content */
+            padding: 2rem;
+            border-radius: 10px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+        .modal-content input,
+        .modal-content textarea {
+            width: 100%;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border: 1px solid #0078d4;
+            border-radius: 4px;
+            background-color: #1a1a1a;
+            color: white;
+        }
+        .modal-content button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #0078d4;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .modal-content button:hover {
+            background-color: #005a9e;
+        }
+        .modal-content input:focus,
+        .modal-content textarea:focus {
+            border-color: #005a9e;
+            outline: none;
+        }
+    </style>
+</head>
+
+
+<body>
+    
+    <header>
+        <h1>User Content</h1>
+    </header>
+    <div class="blog-container" id="blog-container">
+        <!-- Blog widgets will appear here -->
+    </div>
+    <button class="add-button" onclick="openModal()">+</button>
+
+    <!-- Modal for adding a blog -->
+    <div id="blog-modal">
+        <div class="modal-content">
+            <h2>Add Blog Post</h2>
+            <input type="text" id="blog-title" placeholder="Title" />
+            <textarea id="blog-content" placeholder="Content"></textarea>
+            <button onclick="addBlogPost()">Add Post</button>
+        </div>
+    </div>
+
+    <script>
+        const blogContainer = document.getElementById('blog-container');
+        const modal = document.getElementById('blog-modal');
+        const blogTitleInput = document.getElementById('blog-title');
+        const blogContentInput = document.getElementById('blog-content');
+
+        const exampleRecipes = [
+            { title: 'Classic Pancakes', content: 'Mix flour, eggs, milk, and a pinch of salt. Cook on a hot griddle and serve with syrup.', author: 'John Doe' },
+            { title: 'Spaghetti Aglio e Olio', content: 'Sauté garlic in olive oil, toss with cooked spaghetti, and sprinkle with parsley.', author: 'Jane Smith' },
+            { title: 'Chocolate Chip Cookies', content: 'Combine butter, sugar, eggs, and chocolate chips. Bake at 375°F for 12 minutes.', author: 'Emily Johnson' },
+            { title: 'Caesar Salad', content: 'Toss romaine lettuce with Caesar dressing, croutons, and grated Parmesan cheese.', author: 'Michael Brown' },
+            { title: 'Grilled Cheese Sandwich', content: 'Butter two slices of bread, place cheese between them, and grill until golden brown.', author: 'Sarah Davis' },
+        ];
+
+        const savedBlogs = JSON.parse(localStorage.getItem('blogs')) || exampleRecipes;
+
+        function renderBlogs() {
+            blogContainer.innerHTML = ''; // Clear existing blogs
+            savedBlogs.forEach((blog, index) => {
+                const blogPost = document.createElement('div');
+                blogPost.classList.add('blog-post');
+                blogPost.innerHTML = `
+                    <div class="blog-title">${blog.title}</div>
+                    <div class="blog-content">${blog.content}</div>
+                    <div class="blog-author">Written by: ${blog.author}</div>
+                `;
+                blogContainer.appendChild(blogPost);
+            });
+        }
+
+        function openModal() {
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        function addBlogPost() {
+            const title = blogTitleInput.value.trim();
+            const content = blogContentInput.value.trim();
+
+            if (title && content) {
+                const author = 'Anonymous';
+                const newBlog = { title, content, author };
+                savedBlogs.push(newBlog);
+                localStorage.setItem('blogs', JSON.stringify(savedBlogs));
+                renderBlogs();
+                blogTitleInput.value = '';
+                blogContentInput.value = '';
+                closeModal();
+            } else {
+                alert('Please fill out both fields!');
+            }
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        renderBlogs();
+    </script>
+</body>
+</html>
